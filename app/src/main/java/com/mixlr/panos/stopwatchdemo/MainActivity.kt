@@ -7,6 +7,7 @@ import android.content.IntentFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.mixlr.panos.stopwatchdemo.databinding.ActivityMainBinding
+import kotlin.math.roundToInt
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity() {
     private fun reset() {
         binding.apply {
             stop()
+            time = 0.0
+            tvTime.text = getFormattedTime(time)
         }
     }
 
@@ -65,9 +68,18 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent) {
             time = intent.getDoubleExtra(StopWatchService.CURRENT_TIME, 0.0)
             binding.apply {
-                tvTime.text = time.toString()
+                tvTime.text = getFormattedTime(time)
             }
         }
+    }
 
+    private fun getFormattedTime(time: Double): String {
+        val timeInt = time.roundToInt()
+        val SECONDS_PER_MINUTE = 60
+        val SECONDS_PER_HOUR = 3_600
+        val hours = timeInt / SECONDS_PER_HOUR
+        val minutes = timeInt % SECONDS_PER_HOUR / SECONDS_PER_MINUTE
+        val seconds = timeInt % SECONDS_PER_HOUR % SECONDS_PER_MINUTE
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds)
     }
 }
